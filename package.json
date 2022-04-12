@@ -1,0 +1,11 @@
+{
+  "name": "fullstackopen-course-part-3-exercises",
+  "version": "1.0.0",
+  "description": "Full Stack Open 2022, part 3 course exercises",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Simo P.",
+  "license": "ISC"
+}
