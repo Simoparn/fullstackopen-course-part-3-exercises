@@ -2,10 +2,13 @@
 const express = require('express')
 var morgan = require('morgan')
 //cross-origin policy middleware for database and app interaction
+
 const cors = require('cors')
 const app = express()
 
 app.use(express.json())
+//Show static content (index.html)
+app.use(express.static('build'))
 //HTTP request logging middleware
 //morgan.token('data', req => { 
 //  return JSON.stringify(req.body) 
