@@ -44,20 +44,6 @@ app.use(morgan(function (tokens, req, res) {
 
 
 
-    
-
-//Logging middleware, option for morgan
-//  const requestLogger = (request, response, next) => {
-//    console.log('Method:', request.method)
-//    console.log('Path:  ', request.path)
-//    console.log('Body:  ', request.body)
-//    console.log('---')
-//    next()
-//  }
-//app.use(requestLogger)
-
-
-
 
 app.get('/', (req, res) => {
     res.send('<h1>This is the backend for Full Stack Open 2022 phonebook exercise.</h1><br/><h2>More api info:    api/info</h2>')
@@ -70,14 +56,7 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
-    /*const id = Number(request.params.id)
-    console.log(id)
-    const person = persons.find(person => {
-    //console.log(person.id, typeof person.id, id, typeof id, person.id === id)
-    return person.id === id 
-    })
-    console.log(person)
-    */
+    
       
    Person.findById(req.params.id).then(person => {
     if (person) {    
@@ -120,17 +99,7 @@ app.post('/api/persons', (request, response) =>
         })
       }
     
-      //return response.status(400).json({ 
-      //  error: 'name must be unique' 
-      //})
-    
-    //const person = {
-    //    
-    //    //Generate new id automatically here
-    //    id: generateId(),
-    //    name: body.name,
-    //    phonenumber: body.phonenumber
-    //}
+      
 
      else {
        console.log("Neither of the fields is empty, adding or updating a person is allowed.\n")
@@ -143,9 +112,9 @@ app.post('/api/persons', (request, response) =>
           response.json(savedNote)
           })
     
-    //persons = persons.concat(person)  
-    //console.log(person)  
-    //response.json(person)
+    
+      
+    
       }
 })
 
@@ -166,11 +135,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 })
 
   app.delete('/api/persons/:id', (request, response) => {
-    //const id = Number(request.params.id)
-    //console.log("Person to delete "+id)
-    //persons = persons.filter(person => person.id !== id)
-    //console.log(persons)
-    //response.status(204).end()
+    
 
     Person.findByIdAndRemove(request.params.id)
       .then(result => {
@@ -210,13 +175,6 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
 
-//const app = http.createServer((request, response) => {
-//  response.writeHead(200, { 'Content-Type': 'text/plain' })
-//  response.end(JSON.stringify(notes))
-//})
-//
-//const PORT = 3001
-//app.listen(PORT)
-//console.log(`Server running on port ${PORT}`)
+
 
 
