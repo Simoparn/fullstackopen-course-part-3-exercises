@@ -4,14 +4,16 @@ const express = require('express')
 var morgan = require('morgan')
 //cross-origin policy middleware for database and app interaction
 const cors = require('cors')
+
 const app = express()
+//Show static content (index.html)
+app.use(express.static('build'))
 //Database address environment variable
 require('dotenv').config()
 //Database connection module
 const Person = require('./models/person')
 
-//Show static content (index.html)
-app.use(express.static('build'))
+
 app.use(express.json())
 
 //HTTP request logging middleware
@@ -104,7 +106,7 @@ app.get('/api/info', (req, res) => {
 app.post('/api/persons', (request, response) => 
 {  
     const body = request.body
-    //console.log(request.body)
+    console.log("Attempted to add a new person: ", request.body)
     //If no content 
     if (!body.name) {
         return response.status(400).json({ 
@@ -117,11 +119,11 @@ app.post('/api/persons', (request, response) =>
           error: 'phone number missing' 
         })
       }
-    else if (persons.find(person => person.name === body.name)){
-      return response.status(400).json({ 
-        error: 'name must be unique' 
-      })
-    }
+    
+      //return response.status(400).json({ 
+      //  error: 'name must be unique' 
+      //})
+    
     //const person = {
     //    
     //    //Generate new id automatically here
@@ -130,23 +132,25 @@ app.post('/api/persons', (request, response) =>
     //    phonenumber: body.phonenumber
     //}
 
-     
-    const person = new Person({
-      name: body.name,
-      phonenumber: body.phonenumber
-      })
-      
-        person.save().then(savedNote => {
-        response.json(savedNote)
+     else {
+       console.log("Neither of the fields is empty, adding or updating a person is allowed.\n")
+        const person = new Person({
+        name: body.name,
+        phonenumber: body.phonenumber
         })
-
+      
+          person.save().then(savedNote => {
+          response.json(savedNote)
+          })
+    
     //persons = persons.concat(person)  
     //console.log(person)  
     //response.json(person)
+      }
 })
 
 
-app.put('/api/persons/', (request, response, next) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   console.log("Id of the person to update:"+request.params.id)
   const person = {
@@ -154,7 +158,7 @@ app.put('/api/persons/', (request, response, next) => {
     phonenumber: body.phonenumber
   }
 
-  Person.find({name: person.name })
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
@@ -176,7 +180,7 @@ app.put('/api/persons/', (request, response, next) => {
   })    
 
 
-//Error logging middleware defined here, unknown endpoint error pops all the time otherwise
+//Error logging middleware defined here or the endpoints will never execute before error messages
 
 //Missing error handler warning middleware
 const unknownEndpoint = (request, response) => {
