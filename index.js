@@ -75,14 +75,14 @@ app.get('/api/info', (req, res) => {
     date=new Date()
     //console.log(date)
     Person.find({}).then(persons => {
-      res.send('<h2>Phonebook has info for '+ persons.length +' people </h2> <br/><h2>API endpoints:</h2></br><h3>All persons:    /api/persons</h3><br/><h3>'+ date+'</h3>')
+      res.send('<h2>Phonebook has info for '+ persons.length +' people from MongoDB Atlas </h2> <br/><h2>API endpoints:</h2></br><h3>All persons:    /api/persons</h3><br/><h3>'+ date+'</h3>')
     })
 })
 
 
 
 
-app.post('/api/persons', (request, response) => 
+app.post('/api/persons', (request, response, next) => 
 {  
     const body = request.body
     console.log("Attempted to add a new person: ", request.body)
@@ -99,7 +99,7 @@ app.post('/api/persons', (request, response) =>
         })
       }
     
-      
+    
 
      else {
        console.log("Neither of the fields is empty, adding or updating a person is allowed.\n")
@@ -108,17 +108,15 @@ app.post('/api/persons', (request, response) =>
         phonenumber: body.phonenumber
         })
       
-          person.save().then(savedNote => {
-          response.json(savedNote)
+          person.save().then(savedPerson => {
+          response.json(savedPerson)
           })
-    
-    
-      
+          .catch(error => next(error))    
     
       }
 })
 
-
+//TODO: Regex validation doesn't work for updated numbers
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   console.log("Id of the person to update:"+request.params.id)
@@ -131,7 +129,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
-    .catch(error => next(error))
+      .catch(error => next(error))
 })
 
   app.delete('/api/persons/:id', (request, response) => {
@@ -155,10 +153,13 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.error("ERROR CATCHED IN ERROR HANDLER:", error)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id, no such person in database' })
+  }
+  else if (error.name === 'ValidationError') { 
+       return response.status(400).json({ error: error.message })  
   }
 
   next(error)
