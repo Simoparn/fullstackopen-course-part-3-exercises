@@ -17,8 +17,8 @@ const Person = require('./models/person')
 app.use(express.json())
 
 //HTTP request logging middleware
-//morgan.token('data', req => { 
-//  return JSON.stringify(req.body) 
+//morgan.token('data', req => {
+//  return JSON.stringify(req.body)
 //})
 app.use(cors())
 app.use(morgan(function (tokens, req, res) {
@@ -26,7 +26,7 @@ app.use(morgan(function (tokens, req, res) {
     tokens.method(req, res),
     tokens.url(req, res),
     'status code:',
-    tokens.status(req, res),    
+    tokens.status(req, res),
     '- content length:',
     tokens.res(req, res, 'content-length'),
     '- response time:',
@@ -46,9 +46,9 @@ app.use(morgan(function (tokens, req, res) {
 
 
 app.get('/', (req, res) => {
-    res.send('<h1>This is the backend for Full Stack Open 2022 phonebook exercise.</h1><br/><h2>More api info:    api/info</h2>')
+  res.send('<h1>This is the backend for Full Stack Open 2022 phonebook exercise.</h1><br/><h2>More api info:    api/info</h2>')
 })
-      
+
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
     res.json(persons)
@@ -56,70 +56,70 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
-    
-      
-   Person.findById(req.params.id).then(person => {
-    if (person) {    
-        res.json(person)  
-    } else {    
-        res.status(404).end()  
+
+
+  Person.findById(req.params.id).then(person => {
+    if (person) {
+      res.json(person)
+    } else {
+      res.status(404).end()
     }
-    
+
   })
-    .catch(error => next(error))    
+    .catch(error => next(error))
 })
 
 
 
 app.get('/api/info', (req, res) => {
-    date=new Date()
-    //console.log(date)
-    Person.find({}).then(persons => {
-      res.send('<h2>Phonebook has info for '+ persons.length +' people from MongoDB Atlas </h2> <br/><h2>API endpoints:</h2></br><h3>All persons:    /api/persons</h3><br/><h3>'+ date+'</h3>')
-    })
+  let date=new Date()
+  //console.log(date)
+  Person.find({}).then(persons => {
+    res.send('<h2>Phonebook has info for '+ persons.length +' people from MongoDB Atlas </h2> <br/><h2>API endpoints:</h2></br><h3>All persons:    /api/persons</h3><br/><h3>'+ date+'</h3>')
+  })
 })
 
 
 
 
-app.post('/api/persons', (request, response, next) => 
-{  
-    const body = request.body
-    console.log("Attempted to add a new person: ", request.body)
-    //If no content 
-    if (!body.name) {
-        return response.status(400).json({ 
-          error: 'name missing' 
-        })
-      }
-    
-    else if (!body.phonenumber) {
-        return response.status(400).json({ 
-          error: 'phone number missing' 
-        })
-      }
-    
-    
+app.post('/api/persons', (request, response, next) =>
+{
+  const body = request.body
+  console.log('Attempted to add a new person: ', request.body)
+  //If no content
+  if (!body.name) {
+    return response.status(400).json({
+      error: 'name missing'
+    })
+  }
 
-     else {
-       console.log("Neither of the fields is empty, adding or updating a person is allowed.\n")
-        const person = new Person({
-        name: body.name,
-        phonenumber: body.phonenumber
-        })
-      
-          person.save().then(savedPerson => {
-          response.json(savedPerson)
-          })
-          .catch(error => next(error))    
-    
-      }
+  else if (!body.phonenumber) {
+    return response.status(400).json({
+      error: 'phone number missing'
+    })
+  }
+
+
+
+  else {
+    console.log('Neither of the fields is empty, adding or updating a person is allowed.\n')
+    const person = new Person({
+      name: body.name,
+      phonenumber: body.phonenumber
+    })
+
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
+      .catch(error => next(error))
+
+  }
 })
 
 //TODO: Regex validation doesn't work for updated numbers
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
-  console.log("Id of the person to update:"+request.params.id)
+  console.log('Id of the person to update:'+request.params.id)
   const person = {
     name: body.name,
     phonenumber: body.phonenumber
@@ -129,18 +129,18 @@ app.put('/api/persons/:id', (request, response, next) => {
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
-      .catch(error => next(error))
+    .catch(error => next(error))
 })
 
-  app.delete('/api/persons/:id', (request, response) => {
-    
+app.delete('/api/persons/:id', (request, response, next) => {
 
-    Person.findByIdAndRemove(request.params.id)
-      .then(result => {
-        response.status(204).end()
-      })
-        .catch(error => next(error))
-  })    
+
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
 
 
 //Error logging middleware defined here or the endpoints will never execute before error messages
@@ -153,13 +153,13 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
-  console.error("ERROR CATCHED IN ERROR HANDLER:", error)
+  console.error('ERROR CATCHED IN ERROR HANDLER:', error)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id, no such person in database' })
   }
-  else if (error.name === 'ValidationError') { 
-       return response.status(400).json({ error: error.message })  
+  else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
@@ -173,7 +173,7 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
 
 
